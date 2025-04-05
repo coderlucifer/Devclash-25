@@ -7,6 +7,7 @@ import Signup from '../pages/Signup'
 import Signin from '../pages/Signin';
 import Dashboard from "../pages/Dashboard"
 import DuelTest from '../pages/DuelTest';
+import AiProgressTracker from '../pages/AiProgessTracker';
 
 
 
@@ -19,6 +20,7 @@ function App() {
         <Route path="/signin" element={<Signin/>}/>
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="duel" element={<DuelTest />} />
+        <Route path="aiprogresstracker" element={<AiProgressTracker />} />
       </Routes>
       <Toaster />
     </>

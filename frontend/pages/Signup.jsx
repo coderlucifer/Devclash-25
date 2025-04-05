@@ -151,7 +151,7 @@ function Signup() {
                   required
                 >
                   <option value="">Select Standard</option>
-                  {[1, 2, 3, 4, 5, 6].map(num => (
+                  {[6,7,8,9,10,11,12].map(num => (
                     <option key={num} value={num}>{num}</option>
                   ))}
                 </select>

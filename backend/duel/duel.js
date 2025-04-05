@@ -1,9 +1,8 @@
-// duel/duel.js
-
 import { fetchQuestions } from "../utils/generateQuestions.js";
 
 export function setupDuelNamespace(io) {
-  const rooms = {}; // Structure: { roomId: { users: [], score: {}, questionCount: 0, questions: [], current: {} } }
+  // Structure: { roomId: { users: { userId: socket }, score: {}, questionCount: 0, questions: [], current: {} } }
+  const rooms = {};
 
   io.on("connection", (socket) => {
     console.log("User connected:", socket.id);
@@ -13,13 +12,18 @@ export function setupDuelNamespace(io) {
       socket.userId = userId;
       socket.roomId = roomId;
 
+      // If a room exists but the game is finished, clear it so a new game starts.
+      if (rooms[roomId] && rooms[roomId].questionCount >= rooms[roomId].questions.length) {
+        delete rooms[roomId];
+      }
+
+      // Create room if it doesn't exist.
       if (!rooms[roomId]) {
         try {
           const questions = await fetchQuestions();
-          console.log("questions fetched")
-          console.log(questions)
+          console.log("Questions fetched for room", roomId);
           rooms[roomId] = {
-            users: [],
+            users: {},
             score: {},
             questionCount: 0,
             questions,
@@ -32,10 +36,20 @@ export function setupDuelNamespace(io) {
         }
       }
 
-      rooms[roomId].users.push(socket);
+      // Add or update the user in the room.
+      rooms[roomId].users[userId] = socket;
       console.log(`${userId} joined room ${roomId}`);
 
-      if (rooms[roomId].users.length === 2) {
+      // If a game is already in progress, send the current question to the rejoining user.
+      if (rooms[roomId].current) {
+        socket.emit("new-question", {
+          question: rooms[roomId].current.question,
+          options: rooms[roomId].current.options,
+          startTime: rooms[roomId].current.startTime,
+          duration: 15
+        });
+      } else if (Object.keys(rooms[roomId].users).length === 2) {
+        // Start the duel only when exactly two players are present.
         sendNewQuestion(roomId);
       }
     });
@@ -44,6 +58,7 @@ export function setupDuelNamespace(io) {
       const room = rooms[roomId];
       if (!room || !room.current) return;
 
+      // Prevent duplicate answers from the same user.
       if (room.current.answers.find((a) => a.userId === userId)) return;
 
       room.current.answers.push({
@@ -52,7 +67,8 @@ export function setupDuelNamespace(io) {
         timestamp: Date.now()
       });
 
-      if (room.current.answers.length === room.users.length) {
+      // Evaluate when answers from all active users have been received.
+      if (room.current.answers.length >= Object.keys(room.users).length) {
         evaluateAnswers(roomId);
       }
     });
@@ -60,9 +76,10 @@ export function setupDuelNamespace(io) {
     socket.on("disconnect", () => {
       const { roomId, userId } = socket;
       if (roomId && rooms[roomId]) {
-        rooms[roomId].users = rooms[roomId].users.filter((s) => s.id !== socket.id);
-        io.to(roomId).emit("opponent-left");
-        if (rooms[roomId].users.length === 0) {
+        delete rooms[roomId].users[userId];
+        io.to(roomId).emit("opponent-left", { userId });
+        // Clean up room if empty.
+        if (Object.keys(rooms[roomId].users).length === 0) {
           delete rooms[roomId];
         }
       }
@@ -89,7 +106,7 @@ export function setupDuelNamespace(io) {
         questionObj.option3,
         questionObj.option4
       ],
-      correct: questionObj.correctOptionNumber - 1,
+      correct: questionObj.correctOptionNumber - 1, // zero-indexed
       answers: [],
       startTime: Date.now(),
       timer: null
@@ -135,7 +152,12 @@ export function setupDuelNamespace(io) {
     io.to(roomId).emit("result", results);
 
     setTimeout(() => {
-      sendNewQuestion(roomId);
+      // Only send a new question if at least two players remain.
+      if (room && Object.keys(room.users).length >= 2) {
+        sendNewQuestion(roomId);
+      } else {
+        room.current = null;
+      }
     }, 3000);
   }
 
@@ -156,6 +178,7 @@ export function setupDuelNamespace(io) {
       winner: winner.userId
     });
 
+    // Delete the room so that a new game will be started on rejoin.
     delete rooms[roomId];
   }
 }

@@ -5,6 +5,7 @@ import cors from "cors"
 import http from "http";
 import { Server } from "socket.io";
 import studentRoute from "./Routes/studentRoutes.js"
+import testRoute from "./Routes/testRoute.js"
 import { setupDuelNamespace } from "./duel/duel.js";
 const app = express();
 dotenv.config();
@@ -41,7 +42,8 @@ app.get("/duel", (req, res) => {
 const duelNamespace = io.of("/duel");
 setupDuelNamespace(duelNamespace);
 
-app.use("/api/v1/",studentRoute); 
+app.use("/api/student/",studentRoute); 
+app.use("/api/test/",testRoute); 
 
 
 

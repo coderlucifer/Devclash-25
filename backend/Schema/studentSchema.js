@@ -18,6 +18,11 @@ const studentSchema = new mongoose.Schema({
         required : true,
         min : 8
     },
+    class :{
+        tyoe: String,
+        required : true
+    },
+
     Board :{
         type : String,
         required : true

@@ -9,6 +9,8 @@ import Dashboard from "../pages/Dashboard"
 import DuelTest from '../pages/DuelTest';
 import TestPage from '../pages/TestPage';
 import TestSetup from '../pages/TestSetup';
+import AiProgressTracker from '../pages/AiProgessTracker';
+
 
 
 
@@ -23,6 +25,7 @@ function App() {
         <Route path="/duel" element={<DuelTest />} />
         <Route path="/test" element={<TestPage/>} />
         <Route path="/start-test" element={<TestSetup/>} />
+        <Route path="aiprogresstracker" element={<AiProgressTracker />} />
       </Routes>
       <Toaster />
     </>

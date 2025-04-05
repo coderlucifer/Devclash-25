@@ -1,5 +1,6 @@
 import React, { useState ,useEffect} from 'react';
 import { Link } from 'react-router-dom';
+import {useNavigate} from "react-router-dom";
 
 // Mock data for testing
 const mockProgressData = [
@@ -19,6 +20,7 @@ function Dashboard() {
   const [activeTab, setActiveTab] = useState('overview');
   //const studentName = "Alex Johnson"; // Would come from authentication context in real app
   const [student, setStudent] = useState(null);
+  const navigate=useNavigate()
   
 
   useEffect(() => {
@@ -125,7 +127,7 @@ function Dashboard() {
             </div>
             <h3 className="text-xl font-semibold text-gray-800 mb-2">Duel Test</h3>
             <p className="text-gray-600 text-center">Challenge other students to test your knowledge</p>
-            <button className="mt-4 bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded transition">Start Duel</button>
+            <button onClick={()=>navigate("/duel")} className="mt-4 bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded transition">Start Duel</button>
           </div>
           
           <div className="bg-white rounded-lg shadow p-6 hover:shadow-md transition flex flex-col items-center justify-center py-8 cursor-pointer group">

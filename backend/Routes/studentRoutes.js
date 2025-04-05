@@ -5,6 +5,7 @@ import { studentSignup ,studentSignin} from "../controllers/studentControllres.j
 const router = express.Router();
 
 router.post("/signup",studentSignup)
-router.post("/signin",studentSignin);
+router.post("/signin",studentSignin)
+
 
 export default router

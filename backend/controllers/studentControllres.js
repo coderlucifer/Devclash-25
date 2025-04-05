@@ -14,15 +14,15 @@ const studentZod = z.object({
     std: z.number(),
     duelRating: z.number().optional(),
     testRating: z.number().optional(),
-    testCompleted: z.number()
+    testCompleted: z.number().optional()
 });
 
 export async function studentSignup(req, res) {
 
-    const { firstName, lastName, email, password, Board,std, duelRating, testRating} = req.body;
+    const { firstName, lastName, email, password, Board,std, duelRating, testRating,testCompleted} = req.body;
 
     //Validate request body using Zod
-    const validation = studentZod.safeParse({ firstName, lastName, email, password, Board,std, duelRating, testRating});
+    const validation = studentZod.safeParse({ firstName, lastName, email, password, Board,std, duelRating, testRating,testCompleted});
     console.log("logging validation : ",validation);
 
     if (!validation.success) {
@@ -46,7 +46,7 @@ export async function studentSignup(req, res) {
         }
 
         // Create new user
-        await Student.create({ firstName, lastName, email, password : hashedpassword, Board, std, duelRating, testRating});
+        await Student.create({ firstName, lastName, email, password : hashedpassword, Board, std, duelRating, testRating,testCompleted});
 
         return res.status(201).json({
             msg: "Student signup created successfully"

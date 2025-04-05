@@ -13,7 +13,12 @@ function Signup() {
   const [password, setPassword] = useState("");
   const [Board, setBoard] = useState("");
   const [std, setStd] = useState("");
-  const [testCompleted,setTestCompleted]=useState(0)
+  const [testCompleted,setTestCompleted]=useState(0);
+  const [duelRating,setDuelRating]=useState(1000);
+
+  const [testRating,setTestRating]=useState(1000);
+
+
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -30,6 +35,8 @@ function Signup() {
         password,
         Board,
         testCompleted,
+        duelRating,
+        testRating,
         std: std ? parseInt(std) : undefined
       };
       console.log("Sending data:", requestData);

@@ -25,6 +25,8 @@ function Dashboard() {
     const storedStudent = localStorage.getItem('student');
     if (storedStudent) {
       setStudent(JSON.parse(storedStudent));
+    }else{
+      alert("Problem during signin");
     }
   }, []);
 
@@ -47,9 +49,12 @@ function Dashboard() {
               </button>
               <div className="flex items-center space-x-2">
                 <span className="font-medium">{student?.firstName}</span>
+                
                 <div className="h-8 w-8 rounded-full bg-blue-400 flex items-center justify-center">
                   {student?.firstName[0].toUpperCase()}
                 </div>
+                <button>Logout</button>
+                
               </div>
             </div>
           </div>
@@ -85,7 +90,7 @@ function Dashboard() {
             <div className="flex justify-between items-center">
               <div>
                 <p className="text-gray-500 text-sm">Tests Completed</p>
-                <h3 className="text-2xl font-bold text-gray-800">24</h3>
+                <h3 className="text-2xl font-bold text-gray-800">{student?.testCompleted}</h3>
               </div>
               <div className="p-3 bg-green-100 rounded-full">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">

@@ -2,11 +2,21 @@ import express from "express";
 import dotenv from "dotenv"
 import mongoose from "mongoose";
 import cors from "cors"
-
+import http from "http";
+import { Server } from "socket.io";
 import studentRoute from "./Routes/studentRoutes.js"
-
+import { setupDuelNamespace } from "./duel/duel.js";
 const app = express();
 dotenv.config();
+
+const server = http.createServer(app);
+
+const io = new Server(server, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"]
+  }
+});
 
 app.use(cors({
     origin: process.env.FRONTEND,
@@ -25,8 +35,17 @@ try{
     console.log(e);
 }
 
+app.get("/duel", (req, res) => {
+    res.json({ message: "Duel mode is active. Connect via Socket.IO namespace '/duel'" });
+});
+const duelNamespace = io.of("/duel");
+setupDuelNamespace(duelNamespace);
+
 app.use("/api/v1/",studentRoute); 
 
 
 
-app.listen(3000);
+server.listen(3000, () => {
+    console.log("⚔️ Server running on http://localhost:3000");
+  });
+  

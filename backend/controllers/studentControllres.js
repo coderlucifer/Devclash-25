@@ -35,9 +35,9 @@ export async function studentSignup(req, res) {
         // Check if user already exists
         const isAlreadyPresent = await Student.findOne({ email });
         if (isAlreadyPresent) {
-            return res.status(201).json(
-                 "User with this email already exists"
-            );
+            return res.status(201).json({
+                message:  "User with this email already exists"
+        });
         }
 
         // Create new user

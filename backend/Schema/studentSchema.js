@@ -18,8 +18,8 @@ const studentSchema = new mongoose.Schema({
         required : true,
         min : 8
     },
-    class :{
-        type: String,
+    std :{
+        type: Number,
         required : true
     },
     Board :{

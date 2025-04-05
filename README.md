@@ -6,3 +6,6 @@ Create an AI-powered web or mobile application that revolutionizes STEM educatio
 - Log in test to determine level of students
 - Dashboard that shows progress
 - personal learning path generator
+
+
+- is it working ?

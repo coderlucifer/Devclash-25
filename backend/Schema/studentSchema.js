@@ -18,21 +18,22 @@ const studentSchema = new mongoose.Schema({
         required : true,
         min : 8
     },
-    std :{
-        type: Number,
-        required : true
-    },
     Board :{
         type : String,
         required : true
     },
-    duelRating :{
-        type : Number,
+    std :{
+        type: Number,
         required : true
     },
+    duelRating :{
+        type : Number
+    },
     testRating : {
-        type : Number,
-        required : true
+        type : Number
+    },
+    testCompleted:{
+        type: Number
     }
 })
 

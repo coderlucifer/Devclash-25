@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 import React from 'react'
+import { useNavigate } from 'react-router-dom'
 
 // Mock test data that matches your schema structure for testing purposes
 const testData = {
@@ -61,6 +62,15 @@ const SubjectCard = ({ subject, tests, feedback, loading, onRunDiagnostic }) => 
 }
 
 function AiProgressTracker() {
+  const navigate = useNavigate();
+  useEffect(()=>{
+    if(!localStorage.getItem("student")){
+      alert("signup first")
+      navigate("/signup")
+      return
+    }
+  },[])
+
   const [userName, setUserName] = useState('John Doe')
   const [userId, setUserId] = useState('user123')
   const [feedbacks, setFeedbacks] = useState({})

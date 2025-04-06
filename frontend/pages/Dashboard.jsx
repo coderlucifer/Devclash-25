@@ -21,6 +21,21 @@ function Dashboard() {
   //const studentName = "Alex Johnson"; // Would come from authentication context in real app
   const [student, setStudent] = useState(null);
   const navigate=useNavigate()
+
+  useEffect(()=>{
+    if(!localStorage.getItem("student")){
+      alert("signup first")
+      navigate("/signup")
+      return
+    }
+  },[])
+
+  function handleLogout(){
+    localStorage.removeItem("token")
+    localStorage.removeItem("student")
+    navigate("/signup")
+
+  }
   
 
   useEffect(() => {
@@ -55,7 +70,7 @@ function Dashboard() {
                 <div className="h-8 w-8 rounded-full bg-blue-400 flex items-center justify-center">
                   {student?.firstName[0].toUpperCase()}
                 </div>
-                <button>Logout</button>
+                <button onClick={handleLogout} className=' p-2 space-x-2 border: rounded-2xl hover:bg-blue-800'>Logout</button>
                 
               </div>
             </div>

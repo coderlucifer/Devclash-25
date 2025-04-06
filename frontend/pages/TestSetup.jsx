@@ -11,6 +11,14 @@ function TestSetup() {
   const [selectedDifficulty, setSelectedDifficulty] = useState(difficulties[0]);
   const navigate = useNavigate();
 
+  useEffect(()=>{
+    if(!localStorage.getItem("student")){
+      alert("signup first")
+      navigate("/signup")
+      return
+    }
+  },[])
+
 
   const handleStartTest = () => {
     // Navigate to test page with subject and difficulty parameters

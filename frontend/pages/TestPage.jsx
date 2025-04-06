@@ -15,6 +15,17 @@ function getStandard() {
 
 
 function TestPage() {
+
+  const navigate = useNavigate();
+
+  useEffect(()=>{
+    if(!localStorage.getItem("student")){
+      alert("signup first")
+      navigate("/signup")
+      return
+    }
+  },[])
+
   const [testQuestions, setTestQuestions]=useState([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [score, setScore] = useState(0);
@@ -25,7 +36,6 @@ function TestPage() {
   const student = localStorage.getItem("student");
   const studentData= JSON.parse(student);
   
-  const navigate = useNavigate();
   useEffect(() => {
     const fetchQuestions = async () => {
       try {

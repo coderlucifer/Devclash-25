@@ -1,12 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 function DuelTest() {
+  const navigate = useNavigate()
   const [student, setStudent] = useState(null);
   const [selectedSubject, setSelectedSubject] = useState('');
   const [difficulty, setDifficulty] = useState('medium');
   const [onlineUsers, setOnlineUsers] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
+
+  useEffect(()=>{
+    if(!localStorage.getItem("student")){
+      alert("signup first")
+      navigate("/signup")
+      return
+    }
+  },[])
 
   // Mock data
   const subjects = ['Mathematics', 'Science', 'English', 'Social Studies', 'Computer Science'];

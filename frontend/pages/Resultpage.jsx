@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 function ResultPage() {
   const location = useLocation();
+  const navigate= useNavigate();
   const { score, answers } = location.state;
   const [activeIndex, setActiveIndex] = useState(null);
 
@@ -28,7 +29,7 @@ function ResultPage() {
       </div>
 
       {activeIndex !== null && (
-        <div className="border rounded-lg p-6 shadow bg-gray-50">
+        <div className="border rounded-lg p-6 shadow bg-gray-50 mb-5">
           <h3 className="text-xl font-semibold text-gray-800 mb-4">
             Question {activeIndex + 1}
           </h3>
@@ -54,7 +55,13 @@ function ResultPage() {
           </div>
         </div>
       )}
+      <div className='flex justify-center'>
+        <span className='border text-green-400 font-bold px-5 py-2 text-xl rounded-2xl cursor-pointer' onClick={()=>navigate("/dashboard")}>
+          Home
+        </span>
+      </div>
     </div>
+    
   );
 }
 

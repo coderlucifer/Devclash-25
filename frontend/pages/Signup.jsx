@@ -41,7 +41,7 @@ function Signup() {
       };
       console.log("Sending data:", requestData);
       
-      const response = await axios.post("http://localhost:3000/api/v1/signup", requestData, {
+      const response = await axios.post("http://localhost:3000/api/student/signup", requestData, {
         withCredentials: true,
         headers: {
           "Content-Type": "application/json"

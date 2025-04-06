@@ -18,7 +18,7 @@ function Signin() {
     setIsLoading(true);
     
     try {
-      const response = await axios.post("http://localhost:3000/api/v1/signin", {
+      const response = await axios.post("http://localhost:3000/api/student/signin", {
         email,
         password
       }, {

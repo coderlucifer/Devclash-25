@@ -149,7 +149,7 @@ function Dashboard() {
             </div>
             <h3 className="text-xl font-semibold text-gray-800 mb-2">Practice Test</h3>
             <p className="text-gray-600 text-center">Take a practice test to prepare</p>
-            <button className="mt-4 bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded transition">Start Practice</button>
+            <button onClick={()=>navigate("/start-test")} className="mt-4 bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded transition">Start Practice</button>
           </div>
         </div>
 

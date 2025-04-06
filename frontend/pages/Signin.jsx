@@ -64,7 +64,7 @@ function Signin() {
   return (
     <div className="min-h-screen bg-gradient-to-t from-black to-blue-950 text-white flex flex-col items-center justify-center p-4">
       <header className='flex items-center justify-between w-full max-w-4xl p-4'>
-        <h1 className='text-2xl text-orange-500 font-bold'>C0urs0</h1>
+        <h1 className='text-2xl text-orange-500 font-bold'>STEM SPARK</h1>
         <div className='space-x-3'>
           <Link to="/signup" className='bg-transparent px-4 py-2 border border-white rounded hover:bg-white hover:text-blue-950 transition duration-300'>Sign Up</Link>
         </div>

@@ -3,29 +3,6 @@ import axios from 'axios'
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
 
-// Mock test data that matches your schema structure for testing purposes
-const testData = {
-  Mathematics: [
-    { userId: "user123", subject: "Mathematics", score: 8, difficulty: "Easy" },
-    { userId: "user123", subject: "Mathematics", score: 6, difficulty: "Medium" },
-    { userId: "user123", subject: "Mathematics", score: 5, difficulty: "Medium" },
-    { userId: "user123", subject: "Mathematics", score: 4, difficulty: "Hard" }
-  ],
-  Science: [
-    { userId: "user123", subject: "Science", score: 7, difficulty: "Easy" },
-    { userId: "user123", subject: "Science", score: 6, difficulty: "Medium" },
-    { userId: "user123", subject: "Science", score: 5, difficulty: "Hard" },
-    { userId: "user123", subject: "Science", score: 3, difficulty: "Hard" }
-  ],
-  English: [
-    { userId: "user123", subject: "English", score: 9, difficulty: "Easy" },
-    { userId: "user123", subject: "English", score: 7, difficulty: "Medium" },
-    { userId: "user123", subject: "English", score: 8, difficulty: "Medium" },
-    { userId: "user123", subject: "English", score: 6, difficulty: "Hard" }
-  ]
-}
-
-// API configuration
 const API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent"
 const API_KEY = "AIzaSyBsyTlrlszK8-o5EDjbMEL4mBY4SPQCIkg"
 
@@ -63,6 +40,7 @@ const SubjectCard = ({ subject, tests, feedback, loading, onRunDiagnostic }) => 
 
 function AiProgressTracker() {
   const navigate = useNavigate();
+
   useEffect(()=>{
     if(!localStorage.getItem("student")){
       alert("signup first")
@@ -71,38 +49,47 @@ function AiProgressTracker() {
     }
   },[])
 
-  const [userName, setUserName] = useState('John Doe')
-  const [userId, setUserId] = useState('user123')
+  const [userName, setUserName] = useState('')
+  const [userId, setUserId] = useState('')
   const [feedbacks, setFeedbacks] = useState({})
   const [loadingSubject, setLoadingSubject] = useState('')
   const [error, setError] = useState(null)
   const [userData, setUserData] = useState({})
   const [loading, setLoading] = useState(true)
 
-  // Fetch user test data from backend
   useEffect(() => {
     const fetchUserData = async () => {
       setLoading(true)
       try {
-        // Replace with your actual API endpoint
-        const response = await axios.get(`/api/tests/${userId}`)
-        
-        // Process and organize the data by subject
-        const testsBySubject = {}
-        response.data.forEach(test => {
-          if (!testsBySubject[test.subject]) {
-            testsBySubject[test.subject] = []
+        const student = JSON.parse(localStorage.getItem('student'));
+
+        if (!student || !student._id) {
+          console.error('Student ID not found in localStorage');
+          throw new Error('Student ID not found');
+        }
+        setUserName(student.firstName);
+        setUserId(student._id);
+
+        const response = await axios.get('http://localhost:3000/api/test/gettestdata', {
+          params: {
+            userId: student._id
           }
-          testsBySubject[test.subject].push(test)
-        })
+        });
+        
+        const testsBySubject = {};
+        Object.keys(response.data).forEach(subject => {
+          testsBySubject[subject] = response.data[subject].map(({ userId, subject, score, difficulty }) => ({
+            userId,
+            subject,
+            score,
+            difficulty
+          }));
+        });
         
         setUserData(testsBySubject)
         setLoading(false)
       } catch (error) {
         console.error("Error fetching user data:", error)
-        // Fallback to test data if API fails
-        console.log("Using mock test data")
-        setUserData(testData)
         setError("Could not load user data from server. Using sample data for demonstration.")
         setLoading(false)
       }
@@ -116,33 +103,26 @@ function AiProgressTracker() {
     setFeedbacks((prev) => ({ ...prev, [subject]: '' }))
     setError(null)
 
-    // Advanced local feedback generator
     const generateDetailedFeedback = (subject, tests) => {
-      // Calculate overall metrics
       const avgScore = tests.reduce((sum, test) => sum + test.score, 0) / tests.length;
       
-      // Group test scores by difficulty
       const byDifficulty = tests.reduce((acc, test) => {
         if (!acc[test.difficulty]) acc[test.difficulty] = [];
         acc[test.difficulty].push(test);
         return acc;
       }, {});
       
-      // Calculate average scores by difficulty
       const avgByDifficulty = {};
       Object.keys(byDifficulty).forEach(diff => {
         avgByDifficulty[diff] = byDifficulty[diff].reduce((sum, t) => sum + t.score, 0) / byDifficulty[diff].length;
       });
       
-      // Find weakest and strongest performance areas
       const sortedByScore = [...tests].sort((a, b) => a.score - b.score);
       const weakestTests = sortedByScore.slice(0, Math.min(2, tests.length));
       const strongestTests = sortedByScore.slice(-Math.min(2, tests.length)).reverse();
 
-      // Generate feedback
       let feedback = `### ${subject} Performance Analysis\n\n`;
       
-      // Overall assessment
       feedback += `**Overall Assessment**: Your average score in ${subject} is ${avgScore.toFixed(1)}/10. `;
       
       if (tests.length >= 2) {
@@ -153,17 +133,14 @@ function AiProgressTracker() {
           `Your recent scores show you may need additional practice. `;
       }
       
-      // Difficulty breakdown
       feedback += `\n\n**Difficulty Breakdown**:\n`;
       Object.keys(avgByDifficulty).forEach(diff => {
         feedback += `- ${diff} level: ${avgByDifficulty[diff].toFixed(1)}/10\n`;
       });
       
-      // Strengths and weaknesses
       feedback += `\n**Strengths**: You perform well in ${subject} at the ${strongestTests[0]?.difficulty || "higher"} difficulty levels. `;
       feedback += `\n**Areas for Improvement**: Focus on strengthening your performance in ${weakestTests[0]?.difficulty || "challenging"} tests. `;
       
-      // Study plan recommendation
       let weakestDifficulty = "challenging areas";
       if (Object.keys(avgByDifficulty).length > 0) {
         weakestDifficulty = Object.entries(avgByDifficulty)
@@ -214,7 +191,6 @@ Format your response with clear sections and bullet points where appropriate.`,
     } catch (error) {
       console.error('API Error:', error)
       
-      // Use detailed feedback generator instead of showing error
       const detailedFeedback = generateDetailedFeedback(subject, tests)
       setFeedbacks((prev) => ({
         ...prev,
@@ -229,8 +205,8 @@ Format your response with clear sections and bullet points where appropriate.`,
 
   return (
     <div style={styles.container}>
-      <h1>Student Progress Tracker</h1>
-      <h2>Welcome, {userName}</h2>
+      <h1 className='bg-blue-400 border: rounded-1xl  p-4 text-2xl text-shadow-black'>AI Progress Tracker</h1>
+      <h2 className='text-2xl py-4'>Welcome, {userName}</h2>
       {error && <div style={styles.errorMessage}>{error}</div>}
       
       {loading ? (

@@ -66,3 +66,41 @@ export const testFinished= async (req,res)=>{
     res.status(500).json({ error: 'Failed to save test result' });
   }
 }  
+
+// export async function getTests(req,res){
+//   const { studentId } = req.query;
+//   console.log("sstudent it in getests : ",studentId)
+//   if (!studentId) {
+//     return res.status(400).json({ error: 'Student ID is required' })
+//   }
+// } 
+
+
+export const getFormattedTestData = async (req, res) => {
+  const { userId } = req.query
+
+  if (!userId) {
+    return res.status(400).json({ error: "userId is required" })
+  }
+
+  try {
+    // Fetch all test records for the user
+    const userTests = await Test.find({ userId })
+
+    // Group data by subject
+    const formattedData = {}
+
+    userTests.forEach((test) => {
+      const { subject } = test
+      if (!formattedData[subject]) {
+        formattedData[subject] = []
+      }
+      formattedData[subject].push(test)
+    })
+
+    res.status(200).json(formattedData)
+  } catch (error) {
+    console.error("Error fetching test data:", error)
+    res.status(500).json({ error: "Internal server error" })
+  }
+}

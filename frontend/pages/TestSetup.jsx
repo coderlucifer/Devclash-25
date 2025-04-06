@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
 
 const subjects = ['Mathematics', 'Science', 'English', 'Social Studies'];
 const difficulties = ['Easy', 'Medium', 'Hard'];

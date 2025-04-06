@@ -16,6 +16,7 @@ function getStandard() {
 
 function TestPage() {
 
+
   const navigate = useNavigate();
 
   useEffect(()=>{
@@ -25,6 +26,8 @@ function TestPage() {
       return
     }
   },[])
+
+  const [answers, setAnswers] = useState([]);
 
   const [testQuestions, setTestQuestions]=useState([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -68,23 +71,30 @@ function TestPage() {
   }, [currentQuestionIndex]);
 
   const handleOptionClick = (selectedOptionIndex) => {
-    // Here you can handle answer validation and store the result if needed.
-    // For now, we'll just move to the next question.
-    if (selectedOptionIndex === currentQuestion.correctAnswer) {
-      setScore(score + 1);
-    }
+    const isCorrect = selectedOptionIndex === currentQuestion.correctAnswer;
+    if (isCorrect) setScore(score + 1);
+  
+    setAnswers(prev => [
+      ...prev,
+      {
+        question: currentQuestion.question,
+        options: currentQuestion.options,
+        correctAnswer: currentQuestion.correctAnswer,
+        selectedAnswer: selectedOptionIndex,
+      }
+    ]);
+  
     handleNextQuestion();
   };
+  
   const submitData= async()=>{
-      async function hitBackend() {
-        await axios.post("http://localhost:3000/api/test/finish",{
-          userId:studentData._id,
-          subject:subject,
-          score:score,
-          difficulty:difficulty
-        })
-      }
-      await hitBackend();
+    await axios.post("http://localhost:3000/api/test/finish", {
+      userId: studentData._id,
+      subject,
+      score,
+      difficulty,
+    });
+    
   }
   const handleNextQuestion = () => {
     if (currentQuestionIndex < testQuestions.length - 1) {
@@ -92,7 +102,8 @@ function TestPage() {
     } else {
       // Test completed – navigate to a results page or display the score.
       submitData();
-      navigate('/result'); // Adjust the route as necessary.
+      navigate('/result', { state: { score, answers } });
+
     }
   };
   if (!testQuestions.length) {

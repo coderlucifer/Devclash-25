@@ -7,5 +7,3 @@ Create an AI-powered web or mobile application that revolutionizes STEM educatio
 - Dashboard that shows progress
 - personal learning path generator
 
-
-- is it working ?
